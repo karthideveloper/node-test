@@ -1,11 +1,26 @@
-const log=require('./logger')
-const EventEmitter=require('events');
+const Logger=require('./logger') 
+const L=new Logger();
 
-const emitter=new EventEmitter();
+const http=require('http')
+const server=http.createServer((req,res)=>{
+if(req.url==="/"){
+    res.write("hello  world");
+    res.end();
+}
+if(req.url==="/api"){
+    res.write(JSON.stringify([1,2,3,4,5]))
+    res.end()
+}
+});
 
-emitter.on('messageLogged',(args)=>{
-    console.log("hiiii",args)
-})
-emitter.emit('messageLogged',{id:1,url:'https'})
+// server.on('connection',(socket)=>{
+// console.log("new Connection")
+// })
 
-log('hi');
+server.listen(3000)
+console.log("listening on 3000")
+// L.on('messageLogged',(args)=>{
+//     console.log("hiiii",args)
+// })
+
+// L.log('hi');
