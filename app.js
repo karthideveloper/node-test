@@ -1,6 +1,10 @@
 const Logger=require('./logger') 
 const L=new Logger();
 
+const test=require('test123-pkg')
+
+console.log(test.add(1,2))
+
 const http=require('http')
 const server=http.createServer((req,res)=>{
 if(req.url==="/"){
