@@ -1,30 +1,87 @@
-const Logger=require('./logger') 
-const L=new Logger();
+const Joi = require("joi");
+const express = require("express");
+const app = express();
+app.use(express.json());
 
-const test=require('test123-pkg')
+const courses = [
+  {
+    id: 1,
+    name: "course1",
+  },
+  {
+    id: 2,
+    name: "course2",
+  },
+  {
+    id: 3,
+    name: "course3",
+  },
+  {
+    id: 4,
+    name: "course4",
+  },
+];
 
-console.log(test.add(1,2))
-
-const http=require('http')
-const server=http.createServer((req,res)=>{
-if(req.url==="/"){
-    res.write("hello  world");
-    res.end();
-}
-if(req.url==="/api"){
-    res.write(JSON.stringify([1,2,3,4,5]))
-    res.end()
-}
+app.get("/", (req, res) => {
+  res.send("hi");
 });
 
-// server.on('connection',(socket)=>{
-// console.log("new Connection")
-// })
+app.get("/api/courses", (req, res) => {
+  res.send(courses);
+});
 
-server.listen(3000)
-console.log("listening on 3000")
-// L.on('messageLogged',(args)=>{
-//     console.log("hiiii",args)
-// })
+app.get("/api/courses/:id", (req, res) => {
+  const course = courses.find((c) => c.id === parseInt(req.params.id));
+  if (!course) return res.send(404, "id not found");
+  res.status(200).send(course);
+});
 
-// L.log('hi');
+app.post("/api/courses", (req, res) => {
+  const error = validateCourse(req.body);
+  if (error) {
+    res.status(400).send(error.details);
+    return;
+  }
+  const course = {
+    id: courses.length + 1,
+    name: req.body.name,
+  };
+  courses.push(course);
+  res.send(course);
+});
+
+app.put("/api/courses/:id", (req, res) => {
+  const course = courses.find((c) => c.id === parseInt(req.params.id));
+  if (!course) return res.send(404, "id not found");
+
+  const error = validateCourse(req.body);
+  if (error) {
+    res.status(400).send(error.details);
+    return;
+  }
+  course.name = req.body.name;
+  res.send(course);
+});
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`App running on ${port}`);
+});
+
+app.delete('/api/courses/:id',(req,res)=>{
+    const course = courses.find((c) => c.id === parseInt(req.params.id));
+    if (!course) return res.send(404, "id not found");
+
+    const index=courses.indexOf(course);
+    courses.splice(index,1);
+
+    res.send(course);
+})
+
+const validateCourse = (course) => {
+  const schema = Joi.object({
+    name: Joi.string().min(6).required(),
+  });
+
+  const Validation = schema.validate(course);
+  return Validation.error;
+};
