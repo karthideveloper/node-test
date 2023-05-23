@@ -1,7 +1,33 @@
 const Joi = require("joi");
+const helmet=require("helmet")
+const morgan=require("morgan")
+const config=require("config")
 const express = require("express");
+const TestMiddileWare = require("./middleware");
 const app = express();
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static("public"));
+
+const startupDebugger=require("debug")("app:startup")
+const dbDebugger=require("debug")("app:db")
+
+//config
+
+console.log("Application",config.get("name"));
+console.log("Application",config.get("mail.host"));
+
+console.log(`NODE ENV ${process.env.NODE_ENV}`);
+console.log(`app ${app.get('env')}`);
+
+if(app.get('env')==="development"){
+    app.use(morgan('tiny'))
+    startupDebugger("Morgan Enabled12")
+    // console.log("Morgan Enabled");
+}
+
+app.use(helmet())
+
 
 const courses = [
   {
@@ -22,6 +48,18 @@ const courses = [
   },
 ];
 
+
+app.use((req, res, next) => {
+    console.log("Logging..");
+    next();
+  });
+  
+  app.use((req, res, next) => {
+    console.log("Authenticate..");
+    next();
+  });
+  app.use(TestMiddileWare);
+  
 app.get("/", (req, res) => {
   res.send("hi");
 });
@@ -67,15 +105,15 @@ app.listen(port, () => {
   console.log(`App running on ${port}`);
 });
 
-app.delete('/api/courses/:id',(req,res)=>{
-    const course = courses.find((c) => c.id === parseInt(req.params.id));
-    if (!course) return res.send(404, "id not found");
+app.delete("/api/courses/:id", (req, res) => {
+  const course = courses.find((c) => c.id === parseInt(req.params.id));
+  if (!course) return res.send(404, "id not found");
 
-    const index=courses.indexOf(course);
-    courses.splice(index,1);
+  const index = courses.indexOf(course);
+  courses.splice(index, 1);
 
-    res.send(course);
-})
+  res.send(course);
+});
 
 const validateCourse = (course) => {
   const schema = Joi.object({
