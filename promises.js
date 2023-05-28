@@ -17,7 +17,7 @@ const getUser = (id) => {
       console.log("getUserSetTimeout...");
       resolve({ id: id, name: "karthi" });
     }, 2000);
-  });
+  }); 
 };
 const r = getUser(2);
 r.then((res) => {
