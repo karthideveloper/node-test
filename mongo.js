@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const {validate,Course}=require('./module/course')
 mongoose
   .connect("mongodb://localhost/testDemo")
   .then((res) => {
@@ -8,33 +9,7 @@ mongoose
     console.log("error on connection", err);
   });
 
-const courseSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  author: String,
-  tags: {
-    type: Array,
-    validate: {
-      isAsync: true,
-      validator: function (value, callback) {
-        setTimeout(()=>{
-          const result = value && value.length > 5;
-          callback(result);
-        },4000)
-        
-      },
-      message: "course contain at least one tag ",
-    },
-  },
-  date: { type: Date, default: Date.now },
-  isPublished: Boolean,
-  price: {
-    type: Number,
-    required: function () {
-      return this.isPublished;
-    },
-  },
-});
-const Course = mongoose.model("course", courseSchema);
+
 async function createCourse() {
   const course = new Course({
     name: "Angular js Course",
