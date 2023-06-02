@@ -36,3 +36,5 @@ async function userSignup(name,email,password){
 }
 
 userSignup("karthi","karthi.dev@gmail.com","karthi");
+
+exports.User=UserRegister;

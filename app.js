@@ -4,6 +4,7 @@ const config = require("config");
 const express = require("express");
 const courses = require("./router/courses");
 const home = require("./router/home");
+const user = require("./router/user");
 const TestMiddileWare = require("./middleware");
 const app = express();
 app.use(express.json());
@@ -11,6 +12,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use("/api/courses", courses);
 app.use("/", home);
+app.use("/api/user", user);
 const startupDebugger = require("debug")("app:startup");
 const dbDebugger = require("debug")("app:db");
 
@@ -78,33 +80,33 @@ const getUser = (id, callback) => {
   setTimeout(() => {
     console.log("getUserSetTimeout...");
     callback({ id: id, name: "karthi" });
-  },2000);
+  }, 2000);
 };
 
 const getUserRepo = (name, callback) => {
   setTimeout(() => {
     console.log("getUserRepoSetTimeout...");
     callback(["repo1", "repo2", "repo3"]);
-  },2000);
+  }, 2000);
 };
 
 const getUserCommit = (name, callback) => {
   setTimeout(() => {
     console.log("getUserCommitSetTimeout...");
     callback(["commit1", "commit2", "commit3"]);
-  },2000);
+  }, 2000);
 };
 
-function displayUserCommit(commit){
-  console.log(commit)
+function displayUserCommit(commit) {
+  console.log(commit);
 }
-function displayUserRepo(reps){
-  getUserCommit(reps,displayUserCommit)
+function displayUserRepo(reps) {
+  getUserCommit(reps, displayUserCommit);
 }
-function displayUserData(user){
-  getUserRepo(user.name,displayUserRepo)
+function displayUserData(user) {
+  getUserRepo(user.name, displayUserRepo);
 }
-getUser(1,displayUserData)
+getUser(1, displayUserData);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
