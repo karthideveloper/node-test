@@ -3,6 +3,8 @@ const { User } = require("../register");
 const express = require("express");
 const router = express.Router();
 
+const _ = require("lodash");
+
 router.post("/", async (req, res) => {
   const error = req.body.name.length > 0;
   if (error) {
@@ -20,8 +22,10 @@ router.post("/", async (req, res) => {
     password: req.body.password,
   });
 
+  user = new User(_.pick(req.body, ["name", "email", "password"]));
+
   await user.save();
-  res.send(user)
+  res.send(user);
 });
 
 module.exports = router;
