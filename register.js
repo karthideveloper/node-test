@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt=require('bcrypt')
+const jwt=require('jsonwebtoken')
 mongoose
   .connect("mongodb://localhost/testDemo")
   .then((res) => {
@@ -17,7 +18,7 @@ const userRegisterSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
-    unique: true,
+    // unique: true,
   },
   password: {
     type: String,
@@ -35,6 +36,8 @@ async function userSignup(name,email,password){
   });
 
   user.password=await bcrypt.hash(user.password,salt)
+const token=jwt.sign({_id:user._id},'privateKey')
+console.log(token);
   const result = await user.save();
   console.log(result);
 }
